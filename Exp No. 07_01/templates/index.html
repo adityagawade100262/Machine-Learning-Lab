@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Prediction | KNN Model</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #263238;
+            padding: 25px 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #9f1239;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            color: #9f1239;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1c5d1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #475569;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: #be123c;
+            box-shadow: 0 0 0 3px rgba(190, 18, 60, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .predict-btn {
+            background: #9f1239;
+            color: white;
+        }
+
+        .predict-btn:hover {
+            background: #881337;
+        }
+
+        .reset-btn {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            background: #f1f5f9;
+        }
+
+        .result h2 {
+            margin-bottom: 10px;
+        }
+
+        .result p {
+            line-height: 1.7;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 14px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 8px;
+        }
+
+        .warning {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            color: #9a3412;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .container {
+                padding: 22px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>Breast Cancer Prediction</h1>
+        <p>K-Nearest Neighbors (KNN) Machine Learning Model</p>
+        <p>Enter the 30 cell-nucleus measurements to obtain a model prediction.</p>
+    </header>
+
+    <form action="/" method="POST">
+
+        <div class="section">
+            <h2>1. Mean Measurements</h2>
+
+            <div class="grid">
+                {% for feature in [
+                    'radius_mean', 'texture_mean', 'perimeter_mean',
+                    'area_mean', 'smoothness_mean', 'compactness_mean',
+                    'concavity_mean', 'concave points_mean', 'symmetry_mean',
+                    'fractal_dimension_mean'
+                ] %}
+                <div class="field">
+                    <label for="{{ feature }}">{{ feature.replace('_', ' ') | title }}</label>
+                    <input
+                        type="number"
+                        step="any"
+                        id="{{ feature }}"
+                        name="{{ feature }}"
+                        value="{{ request.form.get(feature, '') }}"
+                        placeholder="Enter value"
+                        required>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Standard Error Measurements</h2>
+
+            <div class="grid">
+                {% for feature in [
+                    'radius_se', 'texture_se', 'perimeter_se', 'area_se',
+                    'smoothness_se', 'compactness_se', 'concavity_se',
+                    'concave points_se', 'symmetry_se', 'fractal_dimension_se'
+                ] %}
+                <div class="field">
+                    <label for="{{ feature }}">{{ feature.replace('_', ' ') | title }}</label>
+                    <input
+                        type="number"
+                        step="any"
+                        id="{{ feature }}"
+                        name="{{ feature }}"
+                        value="{{ request.form.get(feature, '') }}"
+                        placeholder="Enter value"
+                        required>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Worst Measurements</h2>
+
+            <div class="grid">
+                {% for feature in [
+                    'radius_worst', 'texture_worst', 'perimeter_worst',
+                    'area_worst', 'smoothness_worst', 'compactness_worst',
+                    'concavity_worst', 'concave points_worst',
+                    'symmetry_worst', 'fractal_dimension_worst'
+                ] %}
+                <div class="field">
+                    <label for="{{ feature }}">{{ feature.replace('_', ' ') | title }}</label>
+                    <input
+                        type="number"
+                        step="any"
+                        id="{{ feature }}"
+                        name="{{ feature }}"
+                        value="{{ request.form.get(feature, '') }}"
+                        placeholder="Enter value"
+                        required>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="predict-btn">Predict Result</button>
+            <button type="reset" class="reset-btn">Clear Form</button>
+        </div>
+
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+        <h2>Prediction Result</h2>
+
+        {% if prediction == 'B' %}
+            <h3 style="color: #15803d;">Benign (B)</h3>
+            <p>The model classifies the supplied measurements as benign.</p>
+        {% elif prediction == 'M' %}
+            <h3 style="color: #b91c1c;">Malignant (M)</h3>
+            <p>The model classifies the supplied measurements as malignant.</p>
+        {% else %}
+            <h3>{{ prediction }}</h3>
+        {% endif %}
+
+        {% if probability is defined and probability is not none %}
+            <p>Model confidence for the predicted class: {{ probability }}%</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="warning">
+        <strong>Important:</strong> This application is for educational and demonstration
+        purposes only. Its prediction is not a medical diagnosis. Consult a qualified
+        healthcare professional for medical interpretation.
+    </div>
+
+    <footer>
+        Breast Cancer Classification Project | Flask + KNN
+    </footer>
+
+</div>
+</body>
+</html>
