@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Performance Predictor</title>
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #e3f2fd, #f5f7ff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 15px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 650px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+    }
+
+    /* Header */
+
+    .header {
+        background: linear-gradient(135deg, #1565c0, #0d47a1);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .header .icon {
+        font-size: 45px;
+        margin-bottom: 10px;
+    }
+
+    .header h1 {
+        font-size: 30px;
+        margin-bottom: 8px;
+    }
+
+    .header p {
+        font-size: 15px;
+        opacity: 0.9;
+    }
+
+    /* Form area */
+
+    .form-container {
+        padding: 30px 35px 35px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px 14px 14px 45px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        border-color: #1565c0;
+        box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+    }
+
+    input::placeholder {
+        color: #999;
+    }
+
+    .hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #777;
+    }
+
+    /* Button */
+
+    button {
+        width: 100%;
+        margin-top: 8px;
+        padding: 15px;
+        background: linear-gradient(135deg, #1565c0, #0d47a1);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(13, 71, 161, 0.3);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    /* Result */
+
+    .result {
+        margin-top: 25px;
+        padding: 20px;
+        border-radius: 12px;
+        background: #e8f5e9;
+        border: 2px solid #a5d6a7;
+        text-align: center;
+    }
+
+    .result-title {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 7px;
+    }
+
+    .result-text {
+        color: #2e7d32;
+        font-size: 25px;
+        font-weight: bold;
+    }
+
+    /* Classes */
+
+    .classes {
+        margin-top: 25px;
+        padding: 18px;
+        background: #f5f7fa;
+        border-radius: 12px;
+    }
+
+    .classes h4 {
+        text-align: center;
+        margin-bottom: 12px;
+        color: #333;
+    }
+
+    .class-list {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .class-item {
+        padding: 7px 12px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #555;
+    }
+
+    /* Footer */
+
+    footer {
+        text-align: center;
+        padding: 18px;
+        background: #fafafa;
+        border-top: 1px solid #eee;
+        color: #777;
+        font-size: 13px;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 600px) {
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .form-container {
+            padding: 25px 20px;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<!-- Header -->
+
+<div class="header">
+
+    <div class="icon">🎓</div>
+
+    <h1>Student Performance Predictor</h1>
+
+    <p>Multiclass Classification using Logistic Regression</p>
+
+</div>
+
+
+<!-- Form -->
+
+<div class="form-container">
+
+    <div class="section-title">
+        📊 Enter Student Details
+    </div>
+
+
+    <form action="/predict" method="POST">
+
+
+        <!-- Study Hours -->
+
+        <div class="input-group">
+
+            <label for="study_hours">
+                📚 Study Hours
+            </label>
+
+            <div class="input-wrapper">
+
+                <span class="input-icon">⏰</span>
+
+                <input
+                    type="number"
+                    id="study_hours"
+                    name="study_hours"
+                    step="0.1"
+                    min="0"
+                    max="24"
+                    placeholder="Example: 6.5"
+                    required>
+
+            </div>
+
+            <span class="hint">
+                Enter the average number of hours studied per day (0–24).
+            </span>
+
+        </div>
+
+
+        <!-- Attendance -->
+
+        <div class="input-group">
+
+            <label for="attendance">
+                🏫 Attendance Percentage
+            </label>
+
+            <div class="input-wrapper">
+
+                <span class="input-icon">📅</span>
+
+                <input
+                    type="number"
+                    id="attendance"
+                    name="attendance"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    placeholder="Example: 85.5"
+                    required>
+
+            </div>
+
+            <span class="hint">
+                Enter attendance percentage between 0 and 100.
+            </span>
+
+        </div>
+
+
+        <!-- Previous Marks -->
+
+        <div class="input-group">
+
+            <label for="previous_marks">
+                📝 Previous Exam Marks
+            </label>
+
+            <div class="input-wrapper">
+
+                <span class="input-icon">📖</span>
+
+                <input
+                    type="number"
+                    id="previous_marks"
+                    name="previous_marks"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    placeholder="Example: 72.5"
+                    required>
+
+            </div>
+
+            <span class="hint">
+                Enter marks obtained in the previous examination (0–100).
+            </span>
+
+        </div>
+
+
+        <!-- Assignment Marks -->
+
+        <div class="input-group">
+
+            <label for="assignment_marks">
+                📑 Assignment Marks
+            </label>
+
+            <div class="input-wrapper">
+
+                <span class="input-icon">✅</span>
+
+                <input
+                    type="number"
+                    id="assignment_marks"
+                    name="assignment_marks"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    placeholder="Example: 88.0"
+                    required>
+
+            </div>
+
+            <span class="hint">
+                Enter assignment marks obtained (0–100).
+            </span>
+
+        </div>
+
+
+        <!-- Predict Button -->
+
+        <button type="submit">
+            🔮 Predict Student Performance
+        </button>
+
+    </form>
+
+
+    <!-- Prediction Result -->
+
+    {% if prediction_text %}
+
+    <div class="result">
+
+        <div class="result-title">
+            MODEL PREDICTION
+        </div>
+
+        <div class="result-text">
+            {{ prediction_text }}
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Possible Classes -->
+
+    <div class="classes">
+
+        <h4>🎯 Possible Performance Classes</h4>
+
+        <div class="class-list">
+
+            <span class="class-item">Poor</span>
+
+            <span class="class-item">Average</span>
+
+            <span class="class-item">Good</span>
+
+            <span class="class-item">Very Good</span>
+
+            <span class="class-item">Excellent</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Footer -->
+
+<footer>
+
+    Student Performance Prediction System |
+    Multiclass Logistic Regression
+
+</footer>
+```
+
+</div>
+
+</body>
+
+</html>
