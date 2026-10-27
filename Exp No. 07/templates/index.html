@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KNN Diabetes Prediction</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 30px 16px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: #0f766e;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .model-tag {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 8px 14px;
+            background: #ccfbf1;
+            color: #115e59;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 6px 25px rgba(15, 23, 42, 0.07);
+            margin-bottom: 22px;
+        }
+
+        .card h2 {
+            font-size: 21px;
+            margin-bottom: 22px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+        }
+
+        .hint {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        button, .reset {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            flex: 1;
+            color: white;
+            background: #0f766e;
+        }
+
+        button:hover {
+            background: #115e59;
+        }
+
+        .reset {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .result {
+            border-left: 5px solid #0f766e;
+        }
+
+        .result.positive {
+            border-left-color: #dc2626;
+        }
+
+        .result h2 {
+            margin-bottom: 12px;
+        }
+
+        .result-title {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #0f766e;
+        }
+
+        .result.positive .result-title {
+            color: #b91c1c;
+        }
+
+        .probability {
+            margin-top: 18px;
+            font-size: 14px;
+        }
+
+        .progress {
+            height: 12px;
+            margin-top: 9px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0f766e;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            line-height: 1.6;
+        }
+
+        .info {
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.8;
+            padding: 12px 0;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 25px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>Diabetes Prediction System</h1>
+
+        <p>
+            Predict diabetes using the K-Nearest Neighbors
+            machine learning model.
+        </p>
+
+        <div class="model-tag">
+            Model: KNNModel.joblib
+        </div>
+    </header>
+
+    {% if prediction %}
+    <section class="card result
+        {% if 'Higher' in prediction %}positive{% endif %}">
+
+        <h2>Prediction Result</h2>
+
+        <div class="result-title">
+            {{ prediction }}
+        </div>
+
+        {% if probability is not none %}
+        <p class="info">
+            Model-estimated probability for the predicted class:
+            <strong>{{ probability }}%</strong>
+        </p>
+
+        <div class="probability">
+            <div class="progress">
+                <div class="progress-fill"
+                     style="width: {{ probability }}%">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% if error %}
+    <section class="card error">
+        <strong>Error:</strong> {{ error }}
+    </section>
+    {% endif %}
+
+    <section class="card">
+        <h2>Enter Patient Details</h2>
+
+        <form method="POST" action="/">
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="Pregnancies">
+                        Number of Pregnancies
+                    </label>
+                    <input type="number" id="Pregnancies"
+                           name="Pregnancies" min="0" max="20"
+                           step="1" required
+                           value="{{ form_data.get('Pregnancies', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="Glucose">
+                        Glucose Level (mg/dL)
+                    </label>
+                    <input type="number" id="Glucose"
+                           name="Glucose" min="1" max="300"
+                           step="any" required
+                           value="{{ form_data.get('Glucose', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="BloodPressure">
+                        Diastolic Blood Pressure (mm Hg)
+                    </label>
+                    <input type="number" id="BloodPressure"
+                           name="BloodPressure" min="1" max="200"
+                           step="any" required
+                           value="{{ form_data.get('BloodPressure', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="SkinThickness">
+                        Skin Thickness (mm)
+                    </label>
+                    <input type="number" id="SkinThickness"
+                           name="SkinThickness" min="0" max="150"
+                           step="any" required
+                           value="{{ form_data.get('SkinThickness', '') }}">
+                    <span class="hint">
+                        Enter 0 if unavailable and if compatible
+                        with your model's training procedure.
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Insulin">
+                        Insulin Level (μU/mL)
+                    </label>
+                    <input type="number" id="Insulin"
+                           name="Insulin" min="0" max="2000"
+                           step="any" required
+                           value="{{ form_data.get('Insulin', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="BMI">
+                        Body Mass Index (BMI)
+                    </label>
+                    <input type="number" id="BMI"
+                           name="BMI" min="0.1" max="100"
+                           step="any" required
+                           value="{{ form_data.get('BMI', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="DiabetesPedigreeFunction">
+                        Diabetes Pedigree Function
+                    </label>
+                    <input type="number"
+                           id="DiabetesPedigreeFunction"
+                           name="DiabetesPedigreeFunction"
+                           min="0" max="10" step="any" required
+                           value="{{ form_data.get('DiabetesPedigreeFunction', '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="Age">Age (years)</label>
+                    <input type="number" id="Age"
+                           name="Age" min="1" max="120"
+                           step="1" required
+                           value="{{ form_data.get('Age', '') }}">
+                </div>
+
+            </div>
+
+            <div class="buttons">
+                <button type="submit">
+                    Predict Diabetes
+                </button>
+
+                <a href="/" class="reset">Reset Form</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>About This Project</h2>
+
+        <p class="info">
+            This application uses a previously trained K-Nearest
+            Neighbors (KNN) model stored in KNNModel.joblib.
+            The prediction is based on eight patient measurements.
+        </p>
+
+        <br>
+
+        <p class="info">
+            <strong>Medical disclaimer:</strong>
+            This project is for educational purposes only.
+            Its predictions are not a medical diagnosis.
+            Consult a qualified healthcare professional for
+            medical evaluation.
+        </p>
+    </section>
+
+    <footer>
+        Diabetes Prediction System | Python + Flask + KNN
+        <br>
+        Educational use only
+    </footer>
+
+</div>
+</body>
+</html>
