@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LoanWise | Loan Approval Prediction</title>
+
+    <style>
+        :root {
+            --primary: #2457e6;
+            --primary-dark: #1945c0;
+            --navy: #102344;
+            --background: #f3f6fc;
+            --text: #17243b;
+            --muted: #718096;
+            --border: #e0e7f1;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 17px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--navy);
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            background: #eaf0ff;
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 22px;
+        }
+
+        .nav-tag {
+            background: #eef2ff;
+            color: #3454b4;
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Hero section */
+        .hero {
+            background: var(--navy);
+            color: white;
+            padding: 43px 20px 85px;
+            text-align: center;
+        }
+
+        .hero-label {
+            display: inline-block;
+            padding: 6px 13px;
+            border: 1px solid #3b5276;
+            background: #1a3154;
+            color: #c7d7ff;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 span {
+            color: #8eafff;
+        }
+
+        .hero p {
+            max-width: 570px;
+            margin: 0 auto;
+            color: #c4d0e4;
+            font-size: 15px;
+        }
+
+        /* Main content */
+        .container {
+            width: min(960px, 92%);
+            margin: -48px auto 40px;
+            position: relative;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid #e9edf5;
+            border-radius: 18px;
+            padding: 34px;
+            box-shadow: 0 15px 45px rgba(16, 35, 68, 0.09);
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .heading-icon {
+            flex-shrink: 0;
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            background: #edf2ff;
+            display: grid;
+            place-items: center;
+            color: var(--primary);
+            font-size: 23px;
+        }
+
+        .card-heading h2 {
+            color: var(--navy);
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        .card-heading p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            color: #8491a7;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+            margin: 25px 0 15px;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #34425a;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 49px;
+            padding: 0 14px;
+            border: 1px solid #dce3ee;
+            border-radius: 9px;
+            outline: none;
+            background: #fbfcff;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s,
+                        background 0.2s;
+        }
+
+        input::placeholder {
+            color: #a2adbf;
+        }
+
+        select:invalid {
+            color: #a2adbf;
+        }
+
+        input:hover,
+        select:hover {
+            border-color: #b9c7df;
+        }
+
+        input:focus,
+        select:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(36, 87, 230, 0.10);
+        }
+
+        .helper {
+            color: #8a96a9;
+            font-size: 11px;
+            margin-top: -3px;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            min-height: 53px;
+            margin-top: 32px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 750;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 15px rgba(36, 87, 230, 0.20);
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .button-arrow {
+            font-size: 19px;
+        }
+
+        /* Result */
+        .result {
+            margin-top: 28px;
+            padding: 26px 20px;
+            text-align: center;
+            border-radius: 14px;
+            animation: appear 0.35s ease;
+        }
+
+        .result-icon {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .result h2 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .result .status {
+            font-size: 29px;
+            font-weight: 800;
+            margin: 2px 0 8px;
+        }
+
+        .result p {
+            font-size: 14px;
+        }
+
+        .approved {
+            background: #ecfdf3;
+            border: 1px solid #b8edcb;
+            color: #17663a;
+        }
+
+        .approved .result-icon {
+            background: #d0f6dd;
+        }
+
+        .rejected {
+            background: #fff0f0;
+            border: 1px solid #facaca;
+            color: #a52626;
+        }
+
+        .rejected .result-icon {
+            background: #ffdada;
+        }
+
+        .error {
+            margin-top: 22px;
+            padding: 15px 17px;
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        .disclaimer {
+            margin-top: 24px;
+            padding: 15px 17px;
+            border-radius: 9px;
+            background: #f6f8fc;
+            border: 1px solid #e9edf5;
+            color: #758197;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .disclaimer strong {
+            color: #4c5b72;
+        }
+
+        footer {
+            padding: 5px 20px 28px;
+            text-align: center;
+            color: #8995a8;
+            font-size: 12px;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                padding: 13px 5%;
+            }
+
+            .brand {
+                font-size: 18px;
+            }
+
+            .brand-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .nav-tag {
+                font-size: 10px;
+                padding: 6px 9px;
+            }
+
+            .hero {
+                padding: 35px 18px 75px;
+            }
+
+            .hero p {
+                font-size: 13px;
+            }
+
+            .container {
+                width: 94%;
+                margin-top: -42px;
+            }
+
+            .card {
+                padding: 23px 19px;
+                border-radius: 14px;
+            }
+
+            .card-heading h2 {
+                font-size: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .section-label {
+                margin-top: 23px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon">▤</div>
+            <span>LoanWise</span>
+        </div>
+
+        <div class="nav-tag">ML CLASSIFICATION</div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-label">Smart Loan Assessment</div>
+
+        <h1>Loan Approval <span>Prediction</span></h1>
+
+        <p>
+            Enter the applicant details below to generate a prediction
+            using a Decision Tree classification model.
+        </p>
+    </section>
+
+    <main class="container">
+        <section class="card">
+
+            <div class="card-heading">
+                <div class="heading-icon">✎</div>
+                <div>
+                    <h2>Applicant Information</h2>
+                    <p>Complete all fields to evaluate the application.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="/">
+
+                <div class="section-label">01 — Personal Information</div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="Gender">Gender</label>
+                        <select id="Gender" name="Gender" required>
+                            <option value="" disabled selected>Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="Married">Marital Status</label>
+                        <select id="Married" name="Married" required>
+                            <option value="" disabled selected>Select marital status</option>
+                            <option value="Yes">Married</option>
+                            <option value="No">Not married</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="Education">Education</label>
+                        <select id="Education" name="Education" required>
+                            <option value="" disabled selected>Select education level</option>
+                            <option value="Graduate">Graduate</option>
+                            <option value="Not Graduate">Not graduate</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="Property_Area">Property Area</label>
+                        <select id="Property_Area" name="Property_Area" required>
+                            <option value="" disabled selected>Select property area</option>
+                            <option value="Urban">Urban</option>
+                            <option value="Semiurban">Semiurban</option>
+                            <option value="Rural">Rural</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="section-label">02 — Financial Information</div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="ApplicantIncome_INR_monthly">
+                            Applicant Monthly Income (₹)
+                        </label>
+                        <input
+                            type="number"
+                            id="ApplicantIncome_INR_monthly"
+                            name="ApplicantIncome_INR_monthly"
+                            min="0"
+                            step="any"
+                            placeholder="Enter monthly income"
+                            required>
+                    </div>
+
+                    <div class="field">
+                        <label for="CoapplicantIncome_INR_monthly">
+                            Co-applicant Monthly Income (₹)
+                        </label>
+                        <input
+                            type="number"
+                            id="CoapplicantIncome_INR_monthly"
+                            name="CoapplicantIncome_INR_monthly"
+                            min="0"
+                            step="any"
+                            placeholder="Enter co-applicant income"
+                            required>
+                    </div>
+
+                    <div class="field">
+                        <label for="Credit_Score">Credit Score</label>
+                        <input
+                            type="number"
+                            id="Credit_Score"
+                            name="Credit_Score"
+                            min="300"
+                            max="900"
+                            step="1"
+                            placeholder="Enter credit score"
+                            required>
+                        <span class="helper">Accepted range: 300–900</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="LoanAmount_INR">Requested Loan Amount (₹)</label>
+                        <input
+                            type="number"
+                            id="LoanAmount_INR"
+                            name="LoanAmount_INR"
+                            min="0"
+                            step="any"
+                            placeholder="Enter loan amount"
+                            required>
+                    </div>
+
+                    <div class="field">
+                        <label for="Loan_Term_Months">Loan Term (Months)</label>
+                        <input
+                            type="number"
+                            id="Loan_Term_Months"
+                            name="Loan_Term_Months"
+                            min="1"
+                            step="1"
+                            placeholder="Enter loan duration"
+                            required>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Predict Loan Status
+                    <span class="button-arrow">→</span>
+                </button>
+
+            </form>
+
+            {% if prediction %}
+                <div class="result {% if prediction == 'Approved' %}approved{% else %}rejected{% endif %}">
+
+                    <div class="result-icon">
+                        {% if prediction == 'Approved' %}
+                            ✓
+                        {% else %}
+                            !
+                        {% endif %}
+                    </div>
+
+                    <h2>Prediction Result</h2>
+
+                    <div class="status">{{ prediction }}</div>
+
+                    <p>
+                        Model confidence:
+                        <strong>{{ probability }}%</strong>
+                    </p>
+
+                </div>
+            {% endif %}
+
+            {% if error %}
+                <div class="error">
+                    <strong>Unable to predict:</strong> {{ error }}
+                </div>
+            {% endif %}
+
+            
+        </section>
+    </main>
+
+    <footer>
+        LoanWise · Decision Tree Classification · Gini Index
+    </footer>
+
+</body>
+</html>
